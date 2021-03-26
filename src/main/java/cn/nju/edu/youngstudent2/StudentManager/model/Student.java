@@ -1,14 +1,18 @@
 package cn.nju.edu.youngstudent2.StudentManager.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
+@Entity
+@Table(name = "students")
 public class Student extends Person {
     @Column(name = "faculty") 
     @NotEmpty
     protected String faculty;
 
-    @Column(name = "stuId")
+    @Column(name = "stu_id")
     @NotEmpty
     protected String stuId;
 

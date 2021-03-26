@@ -9,7 +9,7 @@ import cn.nju.edu.youngstudent2.StudentManager.model.Student;
 
 public interface StudentRepository extends Repository<Student, Integer>{
     
-    @Query("SELECT DISTINCT student FROM Student WHERE student.id =:id")
+    @Query("SELECT stu FROM Student stu WHERE stu.id =:id")
     @Transactional(readOnly = true)
     Student findById(@Param("id") Integer id);
 
