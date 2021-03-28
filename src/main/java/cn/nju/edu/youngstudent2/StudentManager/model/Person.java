@@ -19,7 +19,7 @@ public class Person extends BaseEntity {
     protected String sex;
 
     @Column(name = "birthday")
-    @DateTimeFormat(pattern = "yyy/MM/dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     protected LocalDate birthday;
 
     @Column(name = "hometown")

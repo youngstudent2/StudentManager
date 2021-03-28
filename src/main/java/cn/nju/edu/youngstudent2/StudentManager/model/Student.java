@@ -12,9 +12,6 @@ public class Student extends Person {
     @NotEmpty
     protected String faculty;
 
-    @Column(name = "stu_id")
-    @NotEmpty
-    protected String stuId;
 
     public String getFaculty() {
         return this.faculty;
@@ -24,11 +21,4 @@ public class Student extends Person {
         this.faculty = faculty;
     }
 
-    public String getStuId() {
-        return this.stuId;
-    }
-
-    public void setStuId(String stuId) {
-        this.stuId = stuId;
-    } 
 }
