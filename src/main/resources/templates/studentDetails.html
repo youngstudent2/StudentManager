@@ -38,9 +38,11 @@
       <th>birthday</th>
       <td th:text="*{birthday}"></td>
     </tr>
-   
+
   </table>
   <a th:href="@{{id}/edit(id=${student.id})}" class="btn btn-default">Edit
+    Student</a>
+  <a th:href="@{{id}/delete(id=${student.id})}" class="btn btn-default">Delete
     Student</a>
 
 

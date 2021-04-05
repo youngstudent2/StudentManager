@@ -5,17 +5,21 @@ import java.util.Map;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import cn.nju.edu.youngstudent2.StudentManager.model.Student;
 import cn.nju.edu.youngstudent2.StudentManager.repository.StudentRepository;
+import cn.nju.edu.youngstudent2.StudentManager.service.StudentService;
 
 
 
@@ -25,10 +29,11 @@ public class ManagerController {
     String appName;
 
     private static final String VIEWS_STUDENT_CREATE_OR_UPDATE_FORM = "createOrUpdateStudentForm";
-    private final StudentRepository students;
+    private final StudentService studentService;
 
-    public ManagerController(StudentRepository managerService) {
-        this.students = managerService;
+    @Autowired
+    public ManagerController(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @GetMapping("/")
@@ -49,14 +54,14 @@ public class ManagerController {
             return VIEWS_STUDENT_CREATE_OR_UPDATE_FORM;
         }
         else {
-            this.students.save(stu);
+            this.studentService.saveStudent(stu);
             return "redirect:/students/" + stu.getId();
         }
     }
 
     @GetMapping("/students/{id}/edit") 
     public String initUpdateStudentForm(@PathVariable("id") int id, Model model) {
-        Student student = this.students.findById(id);
+        Student student = this.studentService.findStudentById(id);
         model.addAttribute(student);
         return VIEWS_STUDENT_CREATE_OR_UPDATE_FORM;
     }
@@ -68,7 +73,7 @@ public class ManagerController {
         }
         else {
             student.setId(id);
-            this.students.save(student);
+            this.studentService.saveStudent(student);
             return "redirect:/students/{id}";
         }
     }
@@ -79,12 +84,18 @@ public class ManagerController {
         return "findStudents";
     }
 
+    @GetMapping("/students/{id}/delete")
+    public String removeStudent(@PathVariable("id") int id) {
+        this.studentService.removeStudent(id);
+        return "redirect:/students/";
+    }
+
    
 
     @GetMapping("/students/{id}")
     public ModelAndView showStudent(@PathVariable("id") int id){
         ModelAndView mav = new ModelAndView("studentDetails");
-        Student stu = this.students.findById(id);
+        Student stu = this.studentService.findStudentById(id);
         mav.addObject(stu);
         return mav;
     }
@@ -94,7 +105,7 @@ public class ManagerController {
         if (student.getName() == null) {
             student.setName("");
         }
-        Collection<Student> results = this.students.findByName(student.getName());
+        Collection<Student> results = this.studentService.findStudentsByName(student.getName());
         if (results.isEmpty()) {
             result.rejectValue("name", "notFound", "not found");
             return "students/findStudents";
