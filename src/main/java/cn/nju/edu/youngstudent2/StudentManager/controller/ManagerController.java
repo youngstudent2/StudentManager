@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,9 @@ import cn.nju.edu.youngstudent2.StudentManager.service.StudentService;
 public class ManagerController {
     @Value("${spring.application.name}")
     String appName;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     private static final String VIEWS_STUDENT_CREATE_OR_UPDATE_FORM = "createOrUpdateStudentForm";
     private final StudentService studentService;
@@ -96,6 +100,11 @@ public class ManagerController {
     public ModelAndView showStudent(@PathVariable("id") int id){
         ModelAndView mav = new ModelAndView("studentDetails");
         Student stu = this.studentService.findStudentById(id);
+        if (stu == null) {
+            stu = new Student();
+            stu.setName("not found");
+        }
+            
         mav.addObject(stu);
         return mav;
     }

@@ -1,5 +1,6 @@
 package cn.nju.edu.youngstudent2.StudentManager.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
@@ -9,7 +10,12 @@ import javax.validation.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @MappedSuperclass
-public class Person extends BaseEntity {
+public class Person extends BaseEntity{
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7975146055806762690L;
+
     @Column(name = "name")
     @NotEmpty
     protected String name;
