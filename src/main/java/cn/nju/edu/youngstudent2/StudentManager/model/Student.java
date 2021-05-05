@@ -25,13 +25,4 @@ public class Student extends Person{
     @NotEmpty
     protected String faculty;
 
-
-    public String getFaculty() {
-        return this.faculty;
-    }
-
-    public void setFaculty(String faculty) {
-        this.faculty = faculty;
-    }
-
 }

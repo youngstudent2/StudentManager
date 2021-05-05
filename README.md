@@ -12,3 +12,5 @@ homework description : [here](https://github.com/njuics/sa-2021/wiki/%E4%BD%9C%E
 
 此仓库仅为学生管理应用的spring boot代码
 
+历史版本见[此处](https://github.com/youngstudent2/StudentManager/releases)
+
