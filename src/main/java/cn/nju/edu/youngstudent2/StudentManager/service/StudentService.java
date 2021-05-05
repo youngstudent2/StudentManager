@@ -12,7 +12,7 @@ public interface StudentService {
     
     Collection<Student> findAll();
     
-    void saveStudent(Student stu);
+    Student saveStudent(Student stu);
 
     void removeStudent(int id);
 }

@@ -24,21 +24,25 @@ public class StudentServiceImpl implements StudentService{
     @Transactional(readOnly = true)
     @Cacheable(value = "student", key = "#id")
     public Student findStudentById(int id) {
-        return studentRepository.findById(id);
+        return studentRepository.findById(id).orElseGet(() -> {
+            Student stu = new Student();
+            stu.setName("Not Found");
+            return stu;
+        });
     }
 
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "students", key = "#name")
     public Collection<Student> findStudentsByName(String name) {
-        return studentRepository.findByName(name);
+        return studentRepository.findAllByName(name);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "students", allEntries = true)
-    public void saveStudent(Student stu) {
-        this.studentRepository.save(stu);
+    public Student saveStudent(Student stu) {
+        return this.studentRepository.save(stu);
         
     }
 
@@ -46,7 +50,7 @@ public class StudentServiceImpl implements StudentService{
     @Transactional
     @CacheEvict(value = "students", allEntries = true)
     public void removeStudent(int id) {
-        this.studentRepository.removeById(id);;
+        this.studentRepository.deleteById(id);
     }
 
     @Override

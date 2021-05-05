@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import cn.nju.edu.youngstudent2.StudentManager.model.Student;
@@ -24,13 +27,13 @@ import cn.nju.edu.youngstudent2.StudentManager.service.StudentService;
 
 
 
-@Controller
+@RestController
 public class ManagerController {
     @Value("${spring.application.name}")
     String appName;
 
-    @Autowired
-    private CacheManager cacheManager;
+    // @Autowired
+    // private CacheManager cacheManager;
 
     private static final String VIEWS_STUDENT_CREATE_OR_UPDATE_FORM = "createOrUpdateStudentForm";
     private final StudentService studentService;
@@ -40,93 +43,39 @@ public class ManagerController {
         this.studentService = studentService;
     }
 
-    @GetMapping("/")
-    public String homePage(Model model) {
-        return "home";
+    @GetMapping("/students") 
+    public Collection<Student> studentList() {
+        return this.studentService.findAll();
     }
 
-    @GetMapping("/students/new") 
-    public String initCreationForm(Map<String, Object> model) {
-        Student student = new Student();
-        model.put("student", student);
-        return VIEWS_STUDENT_CREATE_OR_UPDATE_FORM;
+    @PostMapping("/students")
+    public Student newStudent(@RequestBody Student newStudent) {
+        System.out.println(newStudent);
+        return this.studentService.saveStudent(newStudent);
     }
 
-    @PostMapping("/students/new")
-    public String processCreationForm(@Valid Student stu, BindingResult result) {
-        if (result.hasErrors()) {
-            return VIEWS_STUDENT_CREATE_OR_UPDATE_FORM;
-        }
-        else {
-            this.studentService.saveStudent(stu);
-            return "redirect:/students/" + stu.getId();
-        }
+    @PutMapping("/students/{id}")
+    public Student updateStudent(@RequestBody Student newStudent, @PathVariable("id") int id) {
+        newStudent.setId(id);
+        this.studentService.saveStudent(newStudent);
+        return newStudent;
     }
 
-    @GetMapping("/students/{id}/edit") 
-    public String initUpdateStudentForm(@PathVariable("id") int id, Model model) {
-        Student student = this.studentService.findStudentById(id);
-        model.addAttribute(student);
-        return VIEWS_STUDENT_CREATE_OR_UPDATE_FORM;
-    }
 
-    @PostMapping("/students/{id}/edit")
-    public String processUpdateStudentForm(@Valid Student student, BindingResult result, @PathVariable("id") int id) {
-        if (result.hasErrors()) {
-            return VIEWS_STUDENT_CREATE_OR_UPDATE_FORM;
-        }
-        else {
-            student.setId(id);
-            this.studentService.saveStudent(student);
-            return "redirect:/students/{id}";
-        }
-    }
-
-    @GetMapping("/students/find") 
-    public String initFindForm(Map<String,Object> model) {
-        model.put("student", new Student());
-        return "findStudents";
-    }
-
-    @GetMapping("/students/{id}/delete")
+    @DeleteMapping("/students/{id}")
     public String removeStudent(@PathVariable("id") int id) {
         this.studentService.removeStudent(id);
         return "redirect:/students/";
     }
 
    
-
     @GetMapping("/students/{id}")
-    public ModelAndView showStudent(@PathVariable("id") int id){
-        ModelAndView mav = new ModelAndView("studentDetails");
-        Student stu = this.studentService.findStudentById(id);
-        if (stu == null) {
-            stu = new Student();
-            stu.setName("not found");
-        }
-            
-        mav.addObject(stu);
-        return mav;
+    public Student showStudent(@PathVariable("id") int id){
+        return this.studentService.findStudentById(id);    
     }
 
-    @GetMapping("/students")
-    public String processFindForm(Student student, BindingResult result, Map<String,Object> model) {
-        if (student.getName() == null) {
-            student.setName("");
-        }
-        Collection<Student> results = this.studentService.findStudentsByName(student.getName());
-        if (results.isEmpty()) {
-            result.rejectValue("name", "notFound", "not found");
-            return "students/findStudents";
-        }
-        else if (results.size() == 1) {
-            student = results.iterator().next();
-            return "redirect:/students/" + student.getId();
-        }
-        else {
-            model.put("selections", results);
-            return "studentsList";
-        }
-        
+    @GetMapping("/students/name={name}")
+    public Collection<Student> showStudents(@PathVariable("name") String name) {
+        return this.studentService.findStudentsByName(name);
     }
 }
