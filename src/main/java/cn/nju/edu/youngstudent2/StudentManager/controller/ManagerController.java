@@ -35,7 +35,6 @@ public class ManagerController {
     // @Autowired
     // private CacheManager cacheManager;
 
-    private static final String VIEWS_STUDENT_CREATE_OR_UPDATE_FORM = "createOrUpdateStudentForm";
     private final StudentService studentService;
 
     @Autowired
