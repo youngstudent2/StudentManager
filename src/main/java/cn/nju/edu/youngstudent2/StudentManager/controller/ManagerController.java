@@ -49,7 +49,6 @@ public class ManagerController {
 
     @PostMapping("/students")
     public Student newStudent(@RequestBody Student newStudent) {
-        System.out.println(newStudent);
         return this.studentService.saveStudent(newStudent);
     }
 
