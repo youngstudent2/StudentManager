@@ -69,7 +69,7 @@ public class BatchConfiguration {
     }
 
     @Bean
-    public ItemStreamReader<Student> reader() {
+    public PoiItemReader<Student> reader() {
         PoiItemReader<Student> poiReader = new PoiItemReader<Student>();
         poiReader.setResource(new ClassPathResource("./xlsx/测试数据.xlsx"));
         poiReader.setRowMapper(new RowMapperImpl());
