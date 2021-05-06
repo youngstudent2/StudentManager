@@ -18,6 +18,7 @@ import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.batch.extensions.excel.RowMapper;
 import org.springframework.batch.extensions.excel.poi.PoiItemReader;
 import org.springframework.batch.extensions.excel.support.rowset.RowSet;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemStreamReader;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
@@ -29,6 +30,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import cn.nju.edu.youngstudent2.StudentManager.model.Student;
+
 @Configuration
 @EnableBatchProcessing
 public class BatchConfiguration {
@@ -39,6 +41,7 @@ public class BatchConfiguration {
     public StepBuilderFactory stepBuilderFactory;
 
     private static final Logger log = LoggerFactory.getLogger(BatchConfiguration.class);
+
     class RowMapperImpl implements RowMapper<Student> {
 
         @Override
@@ -49,28 +52,20 @@ public class BatchConfiguration {
             student.setName(cols[1]);
             student.setFaculty(cols[2]);
             student.setSex(cols[3]);
-            student.setBirthday(LocalDate.parse(cols[4]));
+            student.setHometown(cols[4]);
+            // student.setBirthday(LocalDate.parse(cols[5]));
             return student;
         }
-        
-    }   
 
-    class JobCompletionNotificationListener extends JobExecutionListenerSupport {
-        private final JdbcTemplate jdbcTemplate;
+    }
 
-        @Autowired
-        public JobCompletionNotificationListener(JdbcTemplate jdbcTemplate) {
-            this.jdbcTemplate = jdbcTemplate;
-        }
-
+    class StudentItemProcessor implements ItemProcessor<Student, Student> {
         @Override
-        public void afterJob(JobExecution jobExecution) {
-            if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
-                log.info("JOB FINISHED");
-                jdbcTemplate.query("SELECT id,name FROM students", (rs,row) -> new Student())
-                            .forEach(student -> log.info("("+student+") in database."));
-            }
+        public Student process(Student student) throws Exception {
+            log.info("converting " + student.getId() + ":" + student.getName());
+            return student;
         }
+
     }
 
     @Bean
@@ -90,20 +85,20 @@ public class BatchConfiguration {
     @Bean
     public JdbcBatchItemWriter<Student> writer(DataSource dataSource) {
         return new JdbcBatchItemWriterBuilder<Student>()
-                    .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
-                    .sql("INSERT INTO students (id,name,faculty,hometown,birthday,sex) VALUES (:id,:name,:faculty,:hometown,:birthday,:sex)")
-                    .dataSource(dataSource).build();
+                .itemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<>())
+                .sql("INSERT INTO students (id,name,faculty,hometown,birthday,sex) VALUES (:id,:name,:faculty,:hometown,:birthday,:sex)")
+                .dataSource(dataSource).build();
     }
 
     @Bean
-    public Job importUserJob(JobCompletionNotificationListener listener, Step step) {
-        return jobBuilderFactory.get("importStudentJob").incrementer(new RunIdIncrementer())
-                                .listener(listener).flow(step).end().build();
+    public Job importStudentJob(JobCompletionNotificationListener listener, Step step) {
+        return jobBuilderFactory.get("importStudentJob").incrementer(new RunIdIncrementer()).listener(listener)
+                .flow(step).end().build();
     }
 
     @Bean
-    public Step mystep(JdbcBatchItemWriter<Student> writer) {
-        return stepBuilderFactory.get("mystep").<Student,Student>chunk(10)
-                        .reader(reader()).processor(processor()).writer(writer).build();
+    public Step step1(JdbcBatchItemWriter<Student> writer) {
+        return stepBuilderFactory.get("step1").<Student, Student>chunk(10).reader(reader()).processor(processor())
+                .writer(writer).build();
     }
 }
