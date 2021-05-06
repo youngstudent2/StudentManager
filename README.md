@@ -14,3 +14,26 @@ homework description : [here](https://github.com/njuics/sa-2021/wiki/%E4%BD%9C%E
 
 历史版本见[此处](https://github.com/youngstudent2/StudentManager/releases)
 
+
+
+### Spring Batch读取学生信息的Excel文件
+
+**结果截图**
+
+网页截图
+
+![](https://git.nju.edu.cn/youngstudent2/mypics/uploads/9bbebd8024612b8c7eb5ef64906fca15/image-20210506211714545.png)
+
+控制台截图
+
+![](https://git.nju.edu.cn/youngstudent2/mypics/uploads/7d0c2c5e11a52e2180a3efa04820edce/20210506211844.png)
+
+
+
+### 遇到的问题
+
+日志导致spring boot应用不断重启：
+
+- 原因是在Batch中使用的日志工具引起了项目文件的改变，触发了devtools的热更新
+- 在配置中加上`spring.devtools.restart.enabled=false`禁用热更新即可
+
