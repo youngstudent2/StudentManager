@@ -22,11 +22,11 @@ homework description : [here](https://github.com/njuics/sa-2021/wiki/%E4%BD%9C%E
 
 网页截图
 
-![](https://git.nju.edu.cn/youngstudent2/mypics/uploads/9bbebd8024612b8c7eb5ef64906fca15/image-20210506211714545.png)
+![](README.assets/image-20210506211714545.png)
 
 控制台截图
 
-![](https://git.nju.edu.cn/youngstudent2/mypics/uploads/7d0c2c5e11a52e2180a3efa04820edce/20210506211844.png)
+![](README.assets/20210506211844.png)
 
 
 
